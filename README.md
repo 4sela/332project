@@ -7,7 +7,7 @@ Our weekly progress will be documented here:
 
 ## Week 2:
 #### Goal:
-* (Vincent): Basic implementation of gRPC with Protobuf
+* (Vincent): Learn the basic of gRPC + Protobuf 
 * (Adam):    Find some other things to implement in the project, maybe a parser or anything else useful
 
 
