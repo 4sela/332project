@@ -16,7 +16,7 @@ Our weekly progress will be documented here:
 
 \#### Goal:
 
-\* (Vincent): Learn the basic of gRPC + Protobuf 
+\* (Vincent): Learn the basic of gRPC + Protobuf
 
 \* (Adam):    Find some other things to implement in the project, maybe a parser or anything else useful
 
@@ -28,9 +28,9 @@ Our weekly progress will be documented here:
 
 \#### Goal:
 
-\* An archiecture of the project has been made. It can be found in 332project\\documents\\x.pdf 
+\* An archiecture of the project has been made. It can be found in 332project\\documents\\architecture 1.0.pdf
 
-\* For the next week, we will try to implement smaller things from the architecture and make it work:  
+\* For the next week, we will try to implement smaller things from the architecture and make it work:
 
 
 
@@ -83,6 +83,4 @@ Our weekly progress will be documented here:
 \#### Goal:
 
 \*
-
-
 
