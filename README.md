@@ -1,86 +1,53 @@
 Our weekly progress will be documented here:
 
+## Week 1:
 
+#### Goal:
 
-\## Week 1:
+- (Together): Setting up the project
 
-\#### Goal:
+## Week 2:
 
-\* (Together): Setting up the project
+#### Goal:
 
+- (Vincent): Learn the basic of gRPC + Protobuf
 
+- (Adam): Find some other things to implement in the project, maybe a parser or anything else useful
 
+## Week 3:
 
+#### Goal:
 
-\## Week 2:
+- An archiecture of the project has been made. It can be found in 332projectdocumentsarchitecture 1.0.pdf
 
-\#### Goal:
+- For the next week, we will try to implement smaller things from the architecture and make it work:
 
-\* (Vincent): Learn the basic of gRPC + Protobuf
+## Week 4:
 
-\* (Adam):    Find some other things to implement in the project, maybe a parser or anything else useful
+#### Goal:
 
+- A more detailed architecture of the worker has been meticulously designed. Throughout next week, we will start the coding process.
 
+## Week 5:
 
+#### Goal:
 
+-
 
-\## Week 3:
+## Week 6:
 
-\#### Goal:
+#### Goal:
 
-\* An archiecture of the project has been made. It can be found in 332project\\documents\\architecture 1.0.pdf
+-
 
-\* For the next week, we will try to implement smaller things from the architecture and make it work:
+## Week 7:
 
+#### Goal:
 
+-
 
+## Week 8:
 
+#### Goal:
 
-\## Week 4:
-
-\#### Goal:
-
-\*
-
-
-
-
-
-\## Week 5:
-
-\#### Goal:
-
-\*
-
-
-
-
-
-\## Week 6:
-
-\#### Goal:
-
-\*
-
-
-
-
-
-
-
-\## Week 7:
-
-\#### Goal:
-
-\*
-
-
-
-
-
-\## Week 8:
-
-\#### Goal:
-
-\*
-
+-
