@@ -1,0 +1,6 @@
+package Worker
+
+
+object MemoryDescription {
+	
+}
