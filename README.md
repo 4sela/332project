@@ -18,7 +18,7 @@ Our weekly progress will be documented here:
 
 #### Goal:
 
-- An archiecture of the project has been made. It can be found in 332project/documents/architecture 1.0.pdf
+- An architecture of the project has been made. It can be found in 332project/documents/architecture 1.0.pdf
 
 - For the next week, we will try to implement smaller things from the architecture and make it work:
 
