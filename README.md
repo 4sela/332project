@@ -1,4 +1,4 @@
-Our weekly progress will be documented here:
+    Our weekly progress will be documented here:
 
 ## Week 1:
 
@@ -40,7 +40,10 @@ Our weekly progress will be documented here:
 
 #### Goal:
 
--
+- For this week, we got together to design the Master system and implemented the initial setup for it
+- As a deadline for Tuesday (preferably Monday), we want to finish the NetworkManager as our next goal, as it's a critical component of the project and because many other components rely on it
+- (Adam): Finish the NetworkManager
+- (Vincent): Continue with the Workers
 
 ## Week 7:
 
