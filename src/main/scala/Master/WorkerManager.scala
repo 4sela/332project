@@ -1,0 +1,3 @@
+package Master
+
+class WorkerManager
