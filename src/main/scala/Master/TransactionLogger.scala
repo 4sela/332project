@@ -1,5 +1,6 @@
 package Master
 
+/*
 class TransactionLogger {
   private val logFile = new File("master_transactions.log")
   private val writer = new PrintWriter(new FileWriter(logFile, true))
@@ -18,3 +19,5 @@ class TransactionLogger {
     log(s"WORKER $workerId: $event")
   }
 }
+
+ */

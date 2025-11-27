@@ -1,5 +1,6 @@
 package Master
 
+/*
 class MessageHandler(
                       controlUnit: ControlUnit,
                       stateManager: StateManager,
@@ -30,3 +31,5 @@ class MessageHandler(
     }
   }
 }
+
+ */

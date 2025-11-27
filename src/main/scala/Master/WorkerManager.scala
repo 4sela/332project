@@ -4,6 +4,7 @@ package Master
  *
  */
 
+/*
 class WorkerManager {
   case class WorkerInfo(
                          id: Int,
@@ -34,3 +35,4 @@ class WorkerManager {
 
   def getAllWorkers: List[WorkerInfo] = workers.values.toList
 }
+*/

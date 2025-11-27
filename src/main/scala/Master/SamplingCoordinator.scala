@@ -1,5 +1,5 @@
 package Master
-
+/*
 class SamplingCoordinator(numWorkers: Int) {
   private val samples = mutable.ArrayBuffer[Array[Byte]]() // 10-byte keys
   private var samplesReceived = 0
@@ -33,3 +33,5 @@ class SamplingCoordinator(numWorkers: Int) {
     false 
   }
 }
+
+ */

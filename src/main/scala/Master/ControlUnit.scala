@@ -1,12 +1,12 @@
 package Master
-
+/*
 class ControlUnit(numWorkers: Int) {
   val stateManager = new StateManager(numWorkers)
   val workerManager = new WorkerManager()
   val sampler = new SamplingCoordinator(numWorkers)
   val networkManager = new NetworkManager(this)
   val logger = new TransactionLogger()
- 
+
   def start(): Unit = { 
     // 1. We start the network server here!
     val (ip, port) = networkManager.start()
@@ -31,3 +31,4 @@ class ControlUnit(numWorkers: Int) {
     }
   }
 }
+*/

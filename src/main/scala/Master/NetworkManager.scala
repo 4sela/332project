@@ -3,7 +3,7 @@ package Master
 /**
  *
  */
-
+/*
 class NetworkManager(controlUnit: ControlUnit) {
   private var server: Server = _
 
@@ -28,3 +28,4 @@ class NetworkManager(controlUnit: ControlUnit) {
     // Send to all workers
   }
 }
+*/

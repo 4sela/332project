@@ -1,5 +1,5 @@
 package Master
-
+/*
 class StateManager(numWorkers: Int) {
   sealed trait MasterState
   case object INIT extends MasterState
@@ -46,3 +46,4 @@ class StateManager(numWorkers: Int) {
     }
   }
 }
+ */
