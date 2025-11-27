@@ -7,7 +7,7 @@ class ControlUnit(numWorkers: Int) {
   val networkManager = new NetworkManager(this)
   val logger = new TransactionLogger()
  
-  def start(): Unit = {
+  def start(): Unit = { 
     // 1. We start the network server here!
     val (ip, port) = networkManager.start()
     println(s"Master listening on $ip:$port")
@@ -22,12 +22,12 @@ class ControlUnit(numWorkers: Int) {
     // 7. Print worker ordering and exit status
   }
  
-  // // Should be called by NetworkManager when the messages arrive
-  // def handleWorkerMessage(workerId: Int, message: WorkerMessage): Unit = {
-  //   message match {
-  //     case ConnectRequest => // ...
-  //     case SampleData => // ...
-  //     case PhaseComplete => // ...
-  //   }
-  // }
+  // Should be called by NetworkManager when the messages arrive
+  def handleWorkerMessage(workerId: Int, message: WorkerMessage): Unit = {
+    message match {
+      case ConnectRequest => // ...
+      case SampleData => // ...
+      case PhaseComplete => // ...
+    }
+  }
 }
