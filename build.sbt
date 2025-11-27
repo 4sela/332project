@@ -9,15 +9,7 @@ lazy val root = (project in file("."))
       "io.grpc" % "grpc-netty" % "1.58.0",
       "io.grpc" % "grpc-protobuf" % "1.58.0",
       "io.grpc" % "grpc-stub" % "1.58.0",
-      "com.google.protobuf" % "protobuf-java" % "3.24.0",
-      "javax.annotation" % "javax.annotation-api" % "1.3.2",
-      // ScalaPB runtime + gRPC
-      "com.thesamet.scalapb" %% "scalapb-runtime-grpc" % "0.11.13"
-    ),
-
-    // Point sbt to your proto folder
-    Compile / PB.targets := Seq(
-      scalapb.gen(grpc = true) -> (Compile / sourceManaged).value / "scalapb"
+      "com.google.protobuf" % "protobuf-java" % "4.33.1",
+      "javax.annotation" % "javax.annotation-api" % "1.3.2"
     )
   )
-
