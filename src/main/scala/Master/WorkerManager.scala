@@ -1,10 +1,10 @@
 package Master
 
-/**
- *
- */
+import scala.collection.mutable
 
-/*
+/**
+ * This is responsible for...
+ */
 class WorkerManager {
   case class WorkerInfo(
                          id: Int,
@@ -14,25 +14,28 @@ class WorkerManager {
                        )
 
   private val workers = mutable.Map[Int, WorkerInfo]()
-  private val workerOrder = mutable.ArrayBuffer[Int]() 
+  private var nextId: Int = 1
 
   def registerWorker(ipAddress: String, port: Int): Int = {
-    val workerId = workers.size + 1
-    workers(workerId) = WorkerInfo(workerId, ipAddress, port)
-    workerOrder += workerId
-    workerId
-  }
+    val workerId: Int = nextId
+    nextId += 1
 
-  def getWorkerOrdering: List[String] = {
-    workerOrder.map(id => workers(id).ipAddress).toList
+    workers(workerId) = WorkerInfo(workerId, ipAddress, port)
+    println(s"Worker $workerId registered at $ipAddress:$port")
+
+    return workerId
   }
 
   def markWorkerCrashed(workerId: Int): Unit = {
     workers.get(workerId).foreach { w =>
       workers(workerId) = w.copy(isAlive = false)
+      println(s"Worker $workerId marked as crashed")
     }
   }
 
   def getAllWorkers: List[WorkerInfo] = workers.values.toList
+
+  def getWorker(workerId: Int): Option[WorkerInfo] = workers.get(workerId)
+
+  def getWorkerOrdering: List[Int] = workers.keys.toList.sorted
 }
-*/

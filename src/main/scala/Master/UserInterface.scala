@@ -8,7 +8,9 @@ enum OutputMessage:
 	case CrashReport
 	case EndSuccessFully
 
-
+/**
+ * 
+ */
 object UserInterface {
 
 	def main(args: Array[String]): Unit = {
@@ -18,11 +20,9 @@ object UserInterface {
 		}
 
 		val numWorkers = args(0).toInt
-		// val controlUnit = new ControlUnit(numWorkers)
-		// controlUnit.start()
+		println(s"Starting Master with $numWorkers workers expected...")
 
-		args.foreach(println)
-
-		def printOutputMessage(message: OutputMessage): Unit = ???
+		val controlUnit = new ControlUnit(numWorkers)
+		controlUnit.start()
 	}
 }
