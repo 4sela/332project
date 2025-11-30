@@ -40,7 +40,14 @@ Our weekly progress will be documented here:
 
 #### Goal:
 
--
+- Implementing the first completed version of the master (Adam) with.-
+    - the protobuf beta 
+    - the main architecture implemantation 
+    - The different component of the system like the State manager, the control unit, the UX asl...
+
+- Try to finished all of the IO operation (Vincent). But I'm late thus I will continue after midnight 
+tonight sorry for that. Otherwise The goal is to finish all of the first implementation of the main IO operation 
+like write read, slow read asl. 
 
 ## Week 7:
 
