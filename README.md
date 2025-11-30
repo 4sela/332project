@@ -1,4 +1,4 @@
-    Our weekly progress will be documented here:
+Our weekly progress will be documented here:
 
 ## Week 1:
 
@@ -40,10 +40,14 @@
 
 #### Goal:
 
-- For this week, we got together to design the Master system and implemented the initial setup for it
-- As a deadline for Tuesday (preferably Monday), we want to finish the NetworkManager as our next goal, as it's a critical component of the project and because many other components rely on it
-- (Adam): Finish the NetworkManager
-- (Vincent): Continue with the Workers
+- Implementing the first completed version of the master (Adam) with.-
+    - the protobuf beta
+    - the main architecture implemantation
+    - The different component of the system like the State manager, the control unit, the UX asl...
+
+- Try to finished all of the IO operation (Vincent). But I'm late thus I will continue after midnight
+  tonight sorry for that. Otherwise The goal is to finish all of the first implementation of the main IO operation
+  like write read, slow read asl.
 
 ## Week 7:
 
