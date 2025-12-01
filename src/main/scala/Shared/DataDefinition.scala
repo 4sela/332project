@@ -1,6 +1,6 @@
 package Shared
 
-import java.io.{BufferedInputStream, FileInputStream}
+import java.io.{BufferedInputStream, BufferedOutputStream, FileInputStream, FileOutputStream}
 
 
 type Key = Array[Byte]
@@ -26,6 +26,9 @@ object Value:
 	val SIZE: Int = 90
 	
 	
+object DataStream:
+	val NUMBER_OF_KEYVALUE_PER_CHUNK: Int = 1000
+	val SIZE_CHUNK: Int = NUMBER_OF_KEYVALUE_PER_CHUNK * KeyValueArray.SIZE
 	
 	
 extension (key_value: KeyValueArray)
@@ -99,11 +102,34 @@ object IO_OPERATION:
 		}
 		
 	
-	//TODO
-	def read_slow(path: Path): Option[DataStream] = ???
+	//TODO not shure of this one (in worse case merge 2 file per 2 file in a pyramide order. Awfull in theory but easer iG)
+	def read_slow(path: Path): Option[DataStream] =
+		val file = new BufferedInputStream(new FileInputStream(path))
+		try {
+			def list_creation: DataStream =
+				if (file.available() <= DataStream.SIZE_CHUNK) file.readAllBytes() #:: LazyList.empty
+				else file.readNBytes(DataStream.SIZE_CHUNK) #:: list_creation
+				
+			Some(list_creation)
+			
+		}catch {
+			case _: Throwable => Option.empty
+		}finally {
+			file.close()
+		}
+		
 	
-	//TODO
-	def write(data: DataArray, path: Path): Option[Path] = ???	
+	//this one should work IG
+	def write(data: DataArray, path: Path): Option[Path] =
+		val file = new BufferedOutputStream(new FileOutputStream(path))
+		try {
+			file.write(data)
+			Some(path)
+		}catch {
+			case _:Throwable => Option.empty
+		}finally {
+			file.close()
+		}
 	
   //TODO 
 	def scan_directory_name(path: Path): List[String] = ??? 
