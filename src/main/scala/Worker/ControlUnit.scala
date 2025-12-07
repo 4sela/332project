@@ -12,6 +12,8 @@ class ControlUnit( masterIp: String,
 									 inputDirs: List[String],
 									 outputDir: String ) {
 
+	private var assignedPartition: Int = -1
+
 	// Worker's own gRPC server for receiving commands from Master
 	private var workerServer: Server = _
 	private val workerPort: Int = findAvailablePort()
@@ -21,7 +23,7 @@ class ControlUnit( masterIp: String,
 	private var masterStub: MasterServiceGrpc.MasterServiceBlockingStub = _
 
 	// Worker ID assigned by Master
-	private var workerId: Int = -1
+	var workerId: Int = -1
 
 	// Partition boundaries received from Master
 	private var partitionBoundaries: Array[Array[Byte]] = Array.empty
@@ -89,7 +91,7 @@ class ControlUnit( masterIp: String,
 		val response = masterStub.connect(request)
 		workerId = response.getWorkerId
 
-		println(s"✓ Successfully connected! Assigned Worker ID: $workerId")
+		println(s"Successfully connected! Assigned Worker ID: $workerId")
 	}
 
 	private def loadInputData(): Unit = {
@@ -102,21 +104,21 @@ class ControlUnit( masterIp: String,
 					files.flatMap { file =>
 						IO_OPERATION.read_full(file) match {
 							case Some(data) =>
-								println(s"    ✓ Loaded file: $file (${data.length} bytes)")
+								println(s"     Loaded file: $file (${data.length} bytes)")
 								Some(data)
 							case None =>
-								println(s"    ✗ Failed to load file: $file")
+								println(s"     Failed to load file: $file")
 								None
 						}
 					}
 				case None =>
-					println(s"  ✗ Failed to scan directory: $dir")
+					println(s"   Failed to scan directory: $dir")
 					List.empty
 			}
 		}
 
 		val totalBytes = inputData.map(_.length).sum
-		println(s"✓ Total input data loaded: $totalBytes bytes (${inputData.size} files)")
+		println(s"Total input data loaded: $totalBytes bytes (${inputData.size} files)")
 	}
 
 	private def sendSamples(): Unit = {
@@ -146,17 +148,19 @@ class ControlUnit( masterIp: String,
 		val response = masterStub.sendSample(request)
 
 		if (response.getSuccess) {
-			println("✓ Samples sent successfully!")
+			println(" Samples sent successfully!")
 		} else {
-			println("✗ Failed to send samples!")
+			println(" Failed to send samples!")
 		}
 	}
 
 	// Called by WorkerServiceImpl when Master sends partition boundaries
 	// (via common.proto ReceivePartitions RPC)
-	def receivePartitionBoundaries(boundaries: Array[Array[Byte]]): Unit = {
-		println(s"✓ Received ${boundaries.length} partition boundaries from Master")
+	def receivePartitionBoundaries(boundaries: Array[Array[Byte]], myPartition: Int): Unit = {
+		println(s"Received ${boundaries.length} partition boundaries from Master")
+		println(s"Assigned to handle partition: $myPartition")
 		partitionBoundaries = boundaries
+		assignedPartition = myPartition
 	}
 
 	// Called by WorkerServiceImpl when Master tells us to start partitioning
@@ -176,7 +180,7 @@ class ControlUnit( masterIp: String,
 			// Partition the sorted data based on boundaries
 			sortedPartitions = partitionData(sortedData)
 
-			println(s"✓ Partitioning complete! Created ${sortedPartitions.size} partitions")
+			println(s"Partitioning complete! Created ${sortedPartitions.size} partitions")
 			sortedPartitions.foreach { case (partId, data) =>
 				println(s"    Partition $partId: ${data.length} bytes")
 			}
@@ -186,7 +190,7 @@ class ControlUnit( masterIp: String,
 
 		} catch {
 			case e: Exception =>
-				println(s"✗ Error during partitioning: ${e.getMessage}")
+				println(s"Error during partitioning: ${e.getMessage}")
 				e.printStackTrace()
 		}
 	}
@@ -199,32 +203,35 @@ class ControlUnit( masterIp: String,
 		println("="*60)
 
 		try {
-			// Write partitions to output files
-			sortedPartitions.toList.sortBy(_._1).foreach { case (partId, data) =>
-				val outputFile = s"$outputDir/partition.$partId"
-				data.write(outputFile) match {
-					case Some(path) =>
-						println(s"  ✓ Written partition $partId to $outputFile (${data.length} bytes)")
-					case None =>
-						println(s"  ✗ Failed to write partition $partId")
-				}
+			// ONLY write OUR assigned partition
+			sortedPartitions.get(assignedPartition) match {
+				case Some(data) =>
+					val outputFile = s"$outputDir/partition.$assignedPartition"
+					data.write(outputFile) match {
+						case Some(path) =>
+							println(s" Written partition $assignedPartition to $outputFile (${data.length} bytes)")
+						case None =>
+							println(s" Failed to write partition $assignedPartition")
+					}
+				case None =>
+					println(s" No data for partition $assignedPartition (empty partition)")
+					// Still create an empty file
+					val outputFile = s"$outputDir/partition.$assignedPartition"
+					Array.empty[Byte].write(outputFile)
 			}
 
-			println(s"✓ Merging complete! Written ${sortedPartitions.size} output files")
-
-			// Report completion to Master (using common.proto ReportComplete)
+			println(s"Merging complete!")
 			reportPhaseComplete("MERGING")
 
 			println("\n" + "="*60)
 			println("WORKER COMPLETED SUCCESSFULLY!")
 			println("="*60 + "\n")
 
-			// Shutdown
 			shutdown()
 
 		} catch {
 			case e: Exception =>
-				println(s"✗ Error during merging: ${e.getMessage}")
+				println(s"Error during merging: ${e.getMessage}")
 				e.printStackTrace()
 		}
 	}
@@ -271,9 +278,9 @@ class ControlUnit( masterIp: String,
 		val response = masterStub.reportComplete(request)
 
 		if (response.getSuccess) {
-			println(s"✓ Reported $phase completion to Master")
+			println(s"Reported $phase completion to Master")
 		} else {
-			println(s"✗ Failed to report $phase completion")
+			println(s"Failed to report $phase completion")
 		}
 	}
 

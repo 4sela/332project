@@ -1,7 +1,7 @@
 package Worker
 
 import io.grpc.stub.StreamObserver
-import masterworker.{Common, WorkerServiceGrpc}
+import masterworker.*
 import scala.jdk.CollectionConverters.*
 
 /**
@@ -15,11 +15,10 @@ class WorkerServiceImpl(controlUnit: ControlUnit) extends WorkerServiceGrpc.Work
                                   responseObserver: StreamObserver[Common.Ack]
                                 ): Unit = {
     try {
-      val boundaries = request.getBoundariesList.asScala
-        .map(_.toByteArray)
-        .toArray
+      val boundaries = request.getBoundariesList.asScala.map(_.toByteArray).toArray
+      val myPartition = controlUnit.workerId - 1  // Worker 1→0, Worker 2→1, Worker 3→2
 
-      controlUnit.receivePartitionBoundaries(boundaries)
+      controlUnit.receivePartitionBoundaries(boundaries, myPartition)
 
       val reply = Common.Ack.newBuilder()
         .setSuccess(true)
@@ -48,14 +47,15 @@ class WorkerServiceImpl(controlUnit: ControlUnit) extends WorkerServiceGrpc.Work
                          ): Unit = {
     try {
       val phase = request.getPhase
-
       println(s"Received START PHASE command: $phase")
 
       phase match {
         case "PARTITIONING" =>
+          // Run in separate thread to avoid blocking gRPC
           new Thread(() => controlUnit.startPartitioning()).start()
 
         case "MERGING" =>
+          // Run in separate thread to avoid blocking gRPC
           new Thread(() => controlUnit.startMerging()).start()
 
         case _ =>
