@@ -310,7 +310,7 @@ class ControlUnit( masterIp: String,
 	private def compareKeys(a: Array[Byte], b: Array[Byte]): Int = {
 		val len = math.min(a.length, math.min(b.length, Key.SIZE))
 		for (i <- 0 until len) {
-			val diff = (a(i) & 0xFF) - (b(i) & 0xFF)
+			val diff = (a(i).toInt & 0xFF) - (b(i).toInt & 0xFF)
 			if (diff != 0) return diff
 		}
 		0

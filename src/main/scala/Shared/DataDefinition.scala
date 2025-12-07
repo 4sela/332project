@@ -97,6 +97,18 @@ extension (path: Path)
     }
   }
 
+  def print_n_first_keyvalue(n: Int = 25): Unit = {
+    path.read_full match {
+      case Some(value) =>
+        value.sliding(KeyValueArray.SIZE,KeyValueArray.SIZE).map(_.take(Key.SIZE)).foreach(
+          k =>
+            k.foreach(str => print((str.toInt & 0xff).toString +  " "))
+            println("")
+        )
+      case None => println("not a file")
+    }
+  }
+
   def read_slow: Option[DataStream] ={
     IO_OPERATION.read_slow(path)
   }
@@ -354,8 +366,7 @@ object IO_OPERATION:
 				println(s"fail to delete directory at $path because of ${e.getMessage}")
 		}
 	}
-	
-	
+
 	/** ++++++ assume that there is only the inputfile/tempfile in the given directory ++++++ */
   def slow_read_all_file_parallel(directory_path: Path): List[DataStream] = {
     scan_directory_name(directory_path).get.map(read_slow).map(_.getOrElse(LazyList.empty)).filter(_.nonEmpty)
@@ -387,3 +398,7 @@ object IO_OPERATION:
 
 
 
+object k:
+  @main
+  def main(): Unit =
+    "./output6/partition.16".print_n_first_keyvalue()
