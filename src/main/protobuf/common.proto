@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+package masterworker;
+
+// These services are provided by Master which Workers will call and use
+service MasterService {
+  // So workers can connect and get an assigned ID
+  rpc Connect(ConnectRequest) returns (ConnectResponse);
+
+  // For workers to sends sample data
+  rpc SendSample(SampleRequest) returns (SampleResponse);
+
+  // For workers to report phase completion
+  rpc ReportComplete(CompleteRequest) returns (CompleteResponse);
+}
+
+// These services are provided by Worker which Master will call and use
+service WorkerService {
+  // For Master to send partition boundaries
+  rpc ReceivePartitions(PartitionsMessage) returns (Ack);
+
+  // For Master to tell worker to start a phase
+  rpc StartPhase(PhaseCommand) returns (Ack);
+}
+
+// Messages
+message ConnectRequest {
+  string ip = 1;
+  int32 port = 2;
+}
+
+message ConnectResponse {
+  int32 worker_id = 1;
+}
+
+message SampleRequest {
+  int32 worker_id = 1;
+  repeated bytes samples = 2;  // Each sample needs to be no more than 10 bytes
+}
+
+message SampleResponse {
+  bool success = 1;
+}
+
+message CompleteRequest {
+  int32 worker_id = 1;
+  string phase = 2;  // For "PARTITIONING" or "MERGING"
+}
+
+message CompleteResponse {
+  bool success = 1;
+}
+
+message PartitionsMessage {
+  repeated bytes boundaries = 1;  // Each boundary also is 10 bytes
+}
+
+message PhaseCommand {
+  string phase = 1;  // Again for "PARTITIONING" or "MERGING"
+}
+
+message Ack {
+  bool success = 1;
+}
