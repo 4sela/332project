@@ -4,6 +4,7 @@ import Master.{SamplingCoordinator, StateManager, WorkerManager}
 import io.grpc.{Server, ServerBuilder}
 import io.grpc.stub.StreamObserver
 import masterworker.{Common, MasterServiceGrpc}
+import scala.jdk.CollectionConverters._
 
 /**
  * 
@@ -30,7 +31,8 @@ class MasterServiceImpl(controlUnit: ControlUnit) extends MasterServiceGrpc.Mast
                           responseObserver: StreamObserver[Common.SampleResponse]): Unit = {
     val workerId = req.getWorkerId
     val sampleList = req.getSamplesList
-    val scalaSamples = sampleList.toArray.map(_.asInstanceOf[Array[Byte]]).toSeq
+
+    val scalaSamples = sampleList.asScala.map(_.toByteArray).toSeq
 
     controlUnit.onSampleReceived(workerId, scalaSamples)
 
@@ -41,6 +43,23 @@ class MasterServiceImpl(controlUnit: ControlUnit) extends MasterServiceGrpc.Mast
 
   override def reportComplete(req: Common.CompleteRequest,
                               responseObserver: StreamObserver[Common.CompleteResponse]): Unit = {
+    val workerId = req.getWorkerId
+    val phase = req.getPhase
+
+    println(s"Worker $workerId reported completion of phase: $phase")
+
+    // Handle different phases
+    phase match {
+      case "PARTITIONING" =>
+        controlUnit.onPartitioningComplete(workerId)
+
+      case "MERGING" =>
+        controlUnit.onMergingComplete(workerId)
+
+      case _ =>
+        println(s"WARNING: Unknown phase '$phase' reported by Worker $workerId")
+    }
+
     val reply = Common.CompleteResponse.newBuilder().setSuccess(true).build()
     responseObserver.onNext(reply)
     responseObserver.onCompleted()
@@ -48,11 +67,11 @@ class MasterServiceImpl(controlUnit: ControlUnit) extends MasterServiceGrpc.Mast
 }
 
 /**
- * 
+ * REMOVED - Use UserInterface.main() instead
  */
-object MasterServer {
-  def main(args: Array[String]): Unit = {
-    val control = new Master.ControlUnit(numWorkers = 1, port = 30040) // This is temporary, the number should be determined in UserInterface likely to 20 or something
-    control.start()
-  }
-}
+// object MasterServer {
+//   def main(args: Array[String]): Unit = {
+//     val control = new Master.ControlUnit(numWorkers = 1, port = 30040)
+//     control.start()
+//   }
+// }
