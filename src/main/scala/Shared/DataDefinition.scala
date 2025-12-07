@@ -117,7 +117,7 @@ extension (path: Path)
     path.read_full match {
       case Some(data) => {
         val list_data = data.sliding(KeyValueArray.SIZE,KeyValueArray.SIZE).toList
-        Some(list_data.zip(list_data.tail).forall((a,b) => MyOrdering.compare(a,b) >= 0))
+        Some(list_data.zip(list_data.tail).forall((a,b) => MyOrdering.compare(a,b) <= 0))
       }
       case None => None
     }
