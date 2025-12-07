@@ -1,10 +1,11 @@
 
 package Shared
 
+import Worker.MergeThread
+
 import java.io.{BufferedInputStream, BufferedOutputStream, FileInputStream, FileOutputStream}
 import java.nio.file.Path
-
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 type Key = Array[Byte]
 type Value = Array[Byte]
@@ -357,4 +358,20 @@ object IO_OPERATION:
 
   def slow_read_all_file_in_raw(directory_path: Path): DataStream = {
     LazyList.from(scan_directory_name(directory_path).get).map(read_slow).map(_.getOrElse(LazyList.empty)).flatMap(_.toArray)
+  }
+  
+  
+  def merge_all_sorted_file(origin_directory: Path, destination_directory: Path): Option[Path] = {
+    try {
+      val merging_threads = MergeThread(origin_directory,destination_directory)
+      merging_threads.run()
+      //because merging was implemented as a thread ... 
+      merging_threads.join()
+      Some(destination_directory)
+    }catch {
+      case e: Throwable => {
+        System.err.println(s"the merging operation failed because : \"${e.getMessage} \"")
+        None
+      }
+    }
   }
