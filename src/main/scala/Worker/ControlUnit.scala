@@ -158,10 +158,14 @@ class ControlUnit( masterIp: String,
 	// (via common.proto ReceivePartitions RPC)
 	def receivePartitionBoundaries(boundaries: Array[Array[Byte]], myPartition: Int): Unit = {
 		println(s"Received ${boundaries.length} partition boundaries from Master")
+		boundaries.zipWithIndex.foreach { case (b, i) =>
+			println(s"  Boundary[$i]: ${b.map("%02X".format(_)).mkString(" ")}")
+		}
 		println(s"Assigned to handle partition: $myPartition")
 		partitionBoundaries = boundaries
 		assignedPartition = myPartition
 	}
+
 
 	// Called by WorkerServiceImpl when Master tells us to start partitioning
 	// (via common.proto StartPhase RPC)
@@ -173,16 +177,34 @@ class ControlUnit( masterIp: String,
 		try {
 			// Sort and partition all input data
 			println("  Sorting all input data...")
-			val allData = inputData.reduce(_ ++ _)
-			val sortedData = allData.sort
+			if (inputData.isEmpty) {
+				println(s"[WARN] Worker $workerId: inputData is empty => no records to partition")
+				// ensure we still have partition map with empty partitions
+				val numPartitions = math.max(1, partitionBoundaries.length + 1)
+				sortedPartitions = (0 until numPartitions).map(i => i -> Array.empty[Byte]).toMap
+			} else {
+				// safer combine (avoid reduce on empty)
+				val allData = inputData.reduce(_ ++ _)
+				val sortedData = allData.sort
 
-			println("  Partitioning data by boundaries...")
-			// Partition the sorted data based on boundaries
-			sortedPartitions = partitionData(sortedData)
+				println(s"  Total sorted bytes: ${sortedData.length}")
+				// show first/last keys (small debugging)
+				val recSize = KeyValueArray.SIZE
+				if (sortedData.length >= recSize) {
+					val firstKey = sortedData.slice(0, Key.SIZE)
+					val lastKey = sortedData.slice(sortedData.length - recSize, sortedData.length - recSize + Key.SIZE)
+					println(s"  First key hex: ${firstKey.map("%02X".format(_)).mkString(" ")}")
+					println(s"  Last  key hex: ${lastKey.map("%02X".format(_)).mkString(" ")}")
+				}
+
+				println("  Partitioning data by boundaries...")
+				// Partition the sorted data based on boundaries
+				sortedPartitions = partitionData(sortedData)
+			}
 
 			println(s"Partitioning complete! Created ${sortedPartitions.size} partitions")
-			sortedPartitions.foreach { case (partId, data) =>
-				println(s"    Partition $partId: ${data.length} bytes")
+			sortedPartitions.toSeq.sortBy(_._1).foreach { case (partId, data) =>
+				println(s"    Partition $partId: ${data.length} bytes (${data.length / KeyValueArray.SIZE} records)")
 			}
 
 			// Report completion to Master (using common.proto ReportComplete)
@@ -194,6 +216,7 @@ class ControlUnit( masterIp: String,
 				e.printStackTrace()
 		}
 	}
+
 
 	// Called by WorkerServiceImpl when Master tells us to start merging
 	// (via common.proto StartPhase RPC)
@@ -237,31 +260,56 @@ class ControlUnit( masterIp: String,
 	}
 
 	private def partitionData(sortedData: DataArray): Map[Int, DataArray] = {
-		val records = sortedData.sliding(KeyValueArray.SIZE, KeyValueArray.SIZE).toArray
+		val recSize = KeyValueArray.SIZE
+		val records = sortedData.sliding(recSize, recSize).toArray
 
-		// Determine which partition each record belongs to
-		val partitionedRecords = records.groupBy { record =>
+		val numPartitions = partitionBoundaries.length + 1
+		// initialize empty partitions (each as Array[Byte])
+		val initial = (0 until numPartitions).map(i => i -> scala.collection.mutable.ArrayBuffer.empty[Byte]).toMap
+
+		// fill partitions
+		val filled = records.foldLeft(initial) { (acc, record) =>
 			val key = record.take(Key.SIZE)
-			findPartitionIndex(key)
+			val part = findPartitionIndex(key)
+			// guard partition bounds: if part is out of range, clamp
+			val partClamped = math.max(0, math.min(numPartitions - 1, part))
+			acc(partClamped) ++= record
+			acc
 		}
 
-		// Convert back to DataArray format
-		partitionedRecords.map { case (partId, records) =>
-			partId -> records.flatten
-		}
+		// convert mutable buffers back to plain arrays (DataArray)
+		filled.map { case (k, buf) => k -> buf.toArray }
 	}
+
 
 	private def findPartitionIndex(key: Key): Int = {
-		// Binary search to find which partition this key belongs to
-		var index = 0
-		while (index < partitionBoundaries.length && compareKeys(key, partitionBoundaries(index)) >= 0) {
-			index += 1
+		// if no boundaries, everything goes to partition 0
+		if (partitionBoundaries.isEmpty) return 0
+
+		var lo = 0
+		var hi = partitionBoundaries.length - 1
+		var ans = partitionBoundaries.length // default => last partition
+
+		while (lo <= hi) {
+			val mid = (lo + hi) >>> 1
+			val cmp = compareKeys(key, partitionBoundaries(mid))
+			if (cmp < 0) {
+				// key < boundary[mid] -> candidate for partition mid
+				ans = mid
+				hi = mid - 1
+			} else {
+				// key >= boundary[mid] -> go right
+				lo = mid + 1
+			}
 		}
-		index
+		// ans is index of first boundary greater than key -> partition = ans
+		ans
 	}
 
+
 	private def compareKeys(a: Array[Byte], b: Array[Byte]): Int = {
-		for (i <- 0 until 10) {
+		val len = math.min(a.length, math.min(b.length, Key.SIZE))
+		for (i <- 0 until len) {
 			val diff = (a(i) & 0xFF) - (b(i) & 0xFF)
 			if (diff != 0) return diff
 		}
