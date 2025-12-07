@@ -1,28 +1,26 @@
 package Worker
 
-import Shared.NetworkMessage
-import NetworkMessage.* 
-
+import Master.*
 
 class MasterServer(controlUnit: ControlUnit) {
 	def sendMessage(): Unit = ???
 	
-	def receiveMessage(message: NetworkMessage): Unit =
+	def receiveMessage(message: OutputMessage): Unit =
 		message match {
-			case NetworkMessage.JoinProcess => ???
-			case NetworkMessage.YouCanJoin => ???
-			case NetworkMessage.ImpossibleToJoin => ???
-			case NetworkMessage.SendSample => ???
-			case NetworkMessage.StartSplitting => ???
-			case NetworkMessage.SendingDataFromTo => ???
-			case NetworkMessage.ReceiveDataFromTo => ???
-			case NetworkMessage.SendingDataFromToAcknowledgment => ???
-			case NetworkMessage.ReceiveDataFromToAcknowledgment => ???
-			case NetworkMessage.EndSplitting => ???
-			case NetworkMessage.EndReceiving => ???
-			case NetworkMessage.StartMerging => ???
-			case NetworkMessage.EndMerging => ???
-			case NetworkMessage.ReportErrorFromWorker => ???
-			case NetworkMessage.ReportCrashFromWorker => ???
+			case OutputMessage.JoinProcess => ???
+			case OutputMessage.YouCanJoin => ???
+			case OutputMessage.ImpossibleToJoin => ???
+			case OutputMessage.SendSample => ???
+			case OutputMessage.StartSplitting => ???
+			case OutputMessage.SendingDataFromTo => ???
+			case OutputMessage.ReceiveDataFromTo => ???
+			case OutputMessage.SendingDataFromToAcknowledgment => ???
+			case OutputMessage.ReceiveDataFromToAcknowledgment => ???
+			case OutputMessage.EndSplitting => ???
+			case OutputMessage.EndReceiving => ???
+			case OutputMessage.StartMerging => ???
+			case OutputMessage.EndMerging => ???
+			case OutputMessage.ReportErrorFromWorker => ???
+			case OutputMessage.ReportCrashFromWorker => ???
 		}
 }

@@ -1,5 +1,7 @@
 package Master
 
+import Shared.IO_OPERATION
+
 enum OutputMessage:
 	case StartProcess
 	case WorkerJoin
@@ -8,11 +10,26 @@ enum OutputMessage:
 	case CrashReport
 	case EndSuccessFully
 
+	case JoinProcess
+	case YouCanJoin
+	case ImpossibleToJoin
+	case SendSample
+	case StartSplitting
+	case SendingDataFromTo
+	case ReceiveDataFromTo
+	case SendingDataFromToAcknowledgment
+	case ReceiveDataFromToAcknowledgment
+	case EndSplitting
+	case EndReceiving
+	case StartMerging
+	case EndMerging
+	case ReportErrorFromWorker
+	case ReportCrashFromWorker
 /**
  * 
  */
 object UserInterface {
-	def main(args: Array[String]): Unit = {
+	def main(args: Array[String] = Array.empty): Unit = {
 		// Parse command line arguments
 		if (args.length != 1) {
 			println("Usage: master <# of workers>")

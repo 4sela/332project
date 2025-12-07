@@ -13,6 +13,7 @@ import scala.util.Random
  *
  * Lets keep it for now in case we want to do more testing
  */
+/*
 object TestWorkerClient {
   def main(args: Array[String]): Unit = {
     println("=== Test Worker Client Starting ===\n")
@@ -89,4 +90,4 @@ object TestWorkerClient {
       ByteString.copyFrom(key)
     }.asJava
   }
-}
+}*/

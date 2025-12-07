@@ -1,8 +1,9 @@
 package Worker
 import Shared.* 
+import Master.*
 
 class ControlUnit {
-	def sendMessage(message: NetworkMessage): Unit = ???
+	def sendMessage(message: OutputMessage): Unit = ???
 	
 	def sampling(): DataArray = ???
 	

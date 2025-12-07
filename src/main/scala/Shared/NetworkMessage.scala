@@ -1,5 +1,5 @@
 package Shared
-
+/*
 enum NetworkMessage {
 	case JoinProcess
 	case YouCanJoin
@@ -24,3 +24,4 @@ enum NetworkMessage {
 	case ReportErrorFromWorker
 	case ReportCrashFromWorker
 }
+*/
