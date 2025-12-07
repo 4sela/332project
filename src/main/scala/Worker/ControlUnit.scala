@@ -292,7 +292,7 @@ class ControlUnit( masterIp: String,
 
 		while (lo <= hi) {
 			val mid = (lo + hi) >>> 1
-			val cmp = compareKeys(key, partitionBoundaries(mid))
+			val cmp = MyOrdering.compare(key, partitionBoundaries(mid))
 			if (cmp < 0) {
 				// key < boundary[mid] -> candidate for partition mid
 				ans = mid
