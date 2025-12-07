@@ -1,6 +1,0 @@
-package Worker
-
-
-object MemoryDescription {
-	
-}
