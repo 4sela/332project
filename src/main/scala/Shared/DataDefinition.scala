@@ -401,4 +401,4 @@ object IO_OPERATION:
 object k:
   @main
   def main(): Unit =
-    "./output6/partition.16".print_n_first_keyvalue()
+    print("./output5/partition.17".is_sorted)
