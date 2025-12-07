@@ -97,9 +97,18 @@ extension (path: Path)
     }
   }
 
-
   def read_slow: Option[DataStream] ={
     IO_OPERATION.read_slow(path)
+  }
+
+  def is_sorted: Option[Boolean] = {
+    path.read_full match {
+      case Some(data) => {
+        val list_data = data.sliding(KeyValueArray.SIZE,KeyValueArray.SIZE).toList
+        Some(list_data.zip(list_data.tail).forall((a,b) => MyOrdering.compare(a,b) >= 0))
+      }
+      case None => None
+    }
   }
 
 
@@ -375,3 +384,6 @@ object IO_OPERATION:
       }
     }
   }
+
+
+
