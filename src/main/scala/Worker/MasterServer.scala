@@ -1,6 +1,6 @@
 package Worker
 
-import Master.*
+import Shared.*
 
 class MasterServer(controlUnit: ControlUnit) {
 	def sendMessage(): Unit = ???
