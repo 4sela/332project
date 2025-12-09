@@ -100,7 +100,7 @@ extension (path: Path)
   def print_n_first_keyvalue(n: Int = 25): Unit = {
     path.read_full match {
       case Some(value) =>
-        value.sliding(KeyValueArray.SIZE,KeyValueArray.SIZE).map(_.take(Key.SIZE)).foreach(
+        value.sliding(KeyValueArray.SIZE,KeyValueArray.SIZE).map(_.take(Key.SIZE)).take(n).foreach(
           k =>
             k.foreach(str => print((str.toInt & 0xff).toString +  " "))
             println("")
@@ -129,10 +129,10 @@ extension (path: Path)
 extension (path: JavaPath)
 	def isDirectory: Boolean =
 		java.nio.file.Files.isDirectory(path)
-	
+
 	def isNormalFile: Boolean =
 		java.nio.file.Files.isRegularFile(path)
-	
+
 	def exist: Boolean =
 		java.nio.file.Files.exists(path)
 
@@ -253,7 +253,7 @@ object IO_OPERATION:
     information_to_print: JavaPath => String = _.toString,
     way_to_print: String => Unit = println,
     how_many_strat_to_explore: Int = 2): Unit = {
-		
+
 		def print_with_javaPath(path: JavaPath)(num_strat_remaining: Int = how_many_strat_to_explore): Unit = {
 			if (path.exist && num_strat_remaining!=0)
 				way_to_print(information_to_print(path))
@@ -379,13 +379,13 @@ object IO_OPERATION:
   def slow_read_all_file_in_raw(directory_path: Path): DataStream = {
     LazyList.from(scan_directory_name(directory_path).get).map(read_slow).map(_.getOrElse(LazyList.empty)).flatMap(_.toArray)
   }
-  
-  
+
+
   def merge_all_sorted_file(origin_directory: Path, destination_directory: Path): Option[Path] = {
     try {
       val merging_threads = MergeThread(origin_directory,destination_directory)
       merging_threads.run()
-      //because merging was implemented as a thread ... 
+      //because merging was implemented as a thread ...
       merging_threads.join()
       Some(destination_directory)
     }catch {
@@ -401,4 +401,5 @@ object IO_OPERATION:
 object k:
   @main
   def main(): Unit =
-    print("./output5/partition.17".is_sorted)
+    print("\n")
+    "./output5/partition.4".print_n_first_keyvalue(10)
